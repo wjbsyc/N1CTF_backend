@@ -1,0 +1,408 @@
+﻿API请求地址,登录,方法,参数,成功响应,失败响应
+/api/auth/login,否,POST,"email,password","{
+""code"": 200,
+""success"": true,
+""access_token"": ""xxxxx"",
+""token_type"": ""bearer"",
+""expires_in"": 3600
+}","{
+""code"": 401,
+""success"": false,
+""message"": ""Unauthorized""
+}"
+/api/auth/register,否,POST,"name,email,password,password_confirmation","{
+""code"": 200,
+""success"": true,
+""message"": ""XXX:An email will be sent to your email address,Please Check!""
+}","{
+""code"": 400,
+""message"": ""xxxxxxxxxx"",
+""success"": false
+}"
+/api/auth/emailVerify/{Token}  （ 邮件验证链接地址: /http://localhost/email_verify?code=JhbleTEghZWVdHzcfM7xKiA0SnLPiu8NTOKEN）,是,GET,无-   header:  Authorization: Bearer XXXXX(access_token),"{
+""code"": 200,
+""success"": true,
+""message"": ""You have successfully verified your email address.""
+}","{
+""code"": 400,
+""message"": ""XXXXXX!"",
+""success"": false
+}"
+/api/auth/resendVerifyMail,是,GET,无,"{
+""code"": 200,
+""success"": true,
+""message"": ""XXX:An email will be sent to your email address,Please Check!""
+}","{
+""code"": 400,
+""success"": false,
+""message"": ""Already Verified!""
+}"
+/api/auth/resetPass    (发送重置密码邮件）,否,POST,email,"{
+""code"": 200,
+""success"": true,
+""message"": ""A reset email has been sent! Please check your email.""
+}","{
+""success"": false,
+""message"": ""xxxxxxxxxxxx"",
+""code"": 400
+}"
+/api/auth/password/reset (重置密码链接 : /password/reset?token=TOKEN&email=EMAIL,否,POST,"
+email , password , 
+password_confirmation ,
+token
+","{
+""code"": 200,
+""success"": true,
+""message"": ""Your password has been reset!""
+}","{
+""code"": 400,
+""message"": ""xxxxxxxxxxxxxxxxxxx"",
+""success"": false
+}"
+/api/auth/me,是,POST,无,"{
+""id"": 38,
+""name"": ""xxx"",
+""email"": mailto:%22wjbsyc@hotmail.com"",
+""email_verified_at"": ""2020-07-01T06:54:53.000000Z"",
+""api_token"": ""W1zst4UjPhGn4U5dEqRqyLslnWebSDBHM02TpeBHD8NvrawJVgxiFmX3SVDy"",
+""teamid"": null,
+""created_at"": ""2020-07-01T05:56:10.000000Z"",
+""updated_at"": ""2020-07-03T12:57:59.000000Z"",
+""team_name"": null
+}","{
+""code"": 400,
+""message"": ""Please Login!"",
+""success"": false
+}"
+/api/createTeam,是,POST,"{
+""name"":""nu1l""
+}","{
+""code"": 200,
+""success"": true,
+""message"": ""OK""
+}","{
+""code"": 400,
+""success"": false,
+""message"": ""Your email address is not verified.""
+}"
+/api/teamInfo,是,GET,无,"{
+""code"": 200,
+""team"": null
+}或{
+""code"": 200,
+""team"": {
+""id"": 3,
+""name"": ""nu1l"",
+""time"": null,
+""team_token"": ""fONE4aynA0Jk9dgV19HShYzuUiOfoDfd68zT3PgKXxfJM4Wj"",
+""created_at"": ""2020-07-06T04:03:09.000000Z"",
+""updated_at"": ""2020-07-06T04:03:09.000000Z""
+}
+}","{
+""code"": 400,
+""message"": ""Please Login!"",
+""success"": false
+}"
+/api/joinTeam,是,POST,"{
+""team_token"":""xxx""
+}","{
+""code"": 200,
+""success"": true,
+""message"": ""OK""
+}","{
+""code"": 400,
+""success"": false,
+""message"": ""Invalid Team Token""
+}"
+/api/IN1t4dmin_N1_c7f_Acd_+1s (注册管理员),否,POST,"{
+""name"":""xxxxxx"",
+mailto:%22email%22:%22admin@mails.homura.ccxxxxxxxxxxx"",
+""password"":""123456"",
+""password_confirmation"":""123456"",
+""confirmcode"":""123456""
+}","{
+""code"": 200,
+""success"": true,
+""message"": ""OK!""
+}","{
+""code"": 400,
+""message"": ""The selected confirmcode is invalid."",
+""success"": false
+}"
+/api/newchallenge,管理员,POST,"{
+""class"":""pwn"",
+""description"" :""1"",
+""url"": ""1"",
+""flag"" : ""12345"",
+""info"": one of [""start"",""hide"",""over""]
+""score"" : 10000
+}","{
+""code"": 200,
+""success"": true,
+""message"": ""OK""
+}","{
+""code"": 400,
+""success"": false,
+""message"": ""Permission Denied""
+}"
+/api/challenge/edit/{chal_id},管理员,POST,"{
+""class"":""pwn"",
+""description"" :""1"",
+""url"": ""1"",
+""flag"" : ""12345"",
+""info"": one of [""start"",""hide"",""over""]
+""score"" : 10000
+}","{
+""code"": 200,
+""success"": true,
+""message"": ""OK""
+}","{
+""code"": 400,
+""success"": false,
+""message"": ""Permission Denied""
+}"
+/api/isAdmin,是,GET,无,"{
+""code"": 200,
+""isAdmin"": true or false
+}","{
+""code"": 401,
+""message"": ""Please Login!"",
+""success"": false
+}"
+api/submit/challenge/{challenge_id},是,POST,"{
+""flag"":""12345""
+}","{
+""code"": 200,
+""success"": true,
+""message"": ""true""
+}","{
+""code"": 400,
+""success"": false,
+""message"": ""false""
+}"
+api/team/{team_id} （某队信息）,否,GET,无,"{
+""code"": 200,
+""success"": true,
+""team"": {
+""team"": ""nu1l"",
+""challs"": [
+{
+""title"": ""1"",
+""score"": 1000,
+""class"": ""pwn"",
+""user_name"": ""xxxx"",
+""pivot"": {
+""teamid"": 3,
+""challengeid"": 1,
+""created_at"": ""2020-07-06T12:48:07.000000Z"",
+""userid"": 39,
+""rank"": 1
+}
+}
+],
+""members"": [
+{
+""name"": ""xxx""
+},
+{
+""name"": ""aaae""
+}
+]
+}
+}","{
+""code"": 200,
+""success"": true,
+""team"": [
+[]
+]
+}"
+/api/challenges （获取题目信息）,是,GET,class (分类，可选，没有表示全部),"{
+""code"": 200,
+""success"": true,
+""challs"": [
+{
+""id"": 1,
+""title"": ""1"",
+""score"": 1000,
+""solversCount"": 1,
+""passed"": true
+},
+{
+""id"": 2,
+""title"": ""2"",
+""score"": 10000,
+""solversCount"": 0,
+""passed"": false
+}
+]
+}","{
+""code"": 401,
+""message"": ""Please Login!"",
+""success"": false
+}"
+/api/challenge/detail/{chall_id} (题目详情）,是,GET,无,"{
+""code"": 200,
+""success"": true,
+""chal"": {
+""title"": ""1"",
+""score"": 1000,
+""description"": ""1"",
+""url"": ""1"",
+""class"": ""pwn"",
+""solves"": 1,""hints"": [
+{
+""id"": 1,
+""content"": ""nu1l"",
+""challengeid"": 1,
+""created_at"": ""2020-07-10T05:43:39.000000Z"",
+""updated_at"": ""2020-07-10T05:43:39.000000Z""
+}
+]
+}
+}","{
+""code"": 401,
+""message"": ""Please Login!"",
+""success"": false
+}"
+/api/challenge/delete/{chall_id} (删除题目),管理员,DELETE,无,"{
+""code"": 200,
+""success"": true,
+""message"": ""OK""
+}","{
+""code"": 400,
+""success"": false,
+""message"": ""Administrator permission is required""
+}"
+/api/challenge/solvers/{chall_id} (某题解答者),是,GET,无,"{
+""code"": 200,
+""success"": true,
+""solvers"": [
+{
+""name"": ""nu1l"",
+""pivot"": {
+""challengeid"": 1,
+""teamid"": 3,
+""created_at"": ""2020-07-06T12:48:07.000000Z"",
+""userid"": 39,
+""rank"": 1
+}
+}
+]
+}","{
+""code"": 401,
+""message"": ""Please Login!"",
+""success"": false
+}"
+/api/scoreboard,否,GET,page,"{
+""code"": 200,
+""success"": true,
+""teams"": [
+{
+""id"": 3,
+""name"": ""nu1l"",
+""totalScore"": 1060,
+""lastsubtime"": ""2020-07-06 20:48:07""，
+""rank"": 1
+}
+]
+}",
+/api/notice/add,管理员,POST,"{“content"":""1""}","{
+""code"": 200,
+""success"": true,
+""message"": ""OK""
+}","{
+""code"": 401,
+""message"": ""Please Login!"",
+""success"": false
+}"
+/api/notice,否,GET,无,"{
+""code"": 200,
+""success"": true,
+""notice"": [
+{
+""id"": 1,
+""content"": ""123"",
+""created_at"": ""2020-07-10T04:08:07.000000Z"",
+""updated_at"": ""2020-07-10T04:08:07.000000Z""
+}
+]
+}",
+/api/notice/edit/{notice_id},管理员,POST,"{“content"":""1""}","{
+""code"": 200,
+""success"": true,
+""message"": ""OK""
+}","{
+""code"": 401,
+""message"": ""Please Login!"",
+""success"": false
+}"
+/api/notice/delete/{notice_id},管理员,DELETE,无,"{
+""code"": 200,
+""success"": true,
+""message"": ""OK""
+}","{
+""code"": 400,
+""success"": false,
+""message"": ""ERROR!""
+}"
+/api/hint/add,管理员,POST,"{
+""content"":""nu1l"",
+""challengeid"":1
+}","{
+""content"":""nu1l"",
+""challengeid"":1
+}","{
+""code"": 400,
+""success"": false,
+""message"": ""ERROR!""
+}"
+/api/hint/delete/{hint_id},管理员,DELETE,无,"{
+""code"": 200,
+""success"": true,
+""message"": ""OK""
+}","{
+""code"": 400,
+""success"": false,
+""message"": ""ERROR!""
+}"
+/api/hint/edit/{hint_id},管理员,POST,"{
+""content"":""nu1l""
+}","{
+""code"": 200,
+""success"": true,
+""message"": ""OK""
+}","{
+""code"": 400,
+""success"": false,
+""message"": ""ERROR!""
+}"
+/api/game/over,管理员,GET,无,"{
+""code"": 200,
+""success"": true,
+""message"": ""Game Over""
+}","{
+""code"": 401,
+""message"": ""Please Login!"",
+""success"": false
+}"
+/api/game/time,管理员,POST,"{
+""starttime"":""2020-7-10 00:00:00"",
+""endtime"":""2020-7-11 00:00:00""
+}","{
+""code"": 200,
+""success"": true,
+""message"": ""Game will start at 2020-07-10 14:11:51 end at 2020-07-11 00:00:00""
+}","{
+""code"": 401,
+""message"": ""Please Login!"",
+""success"": false
+}"
+/api/game/start,管理员,GET,无,"{
+""code"": 200,
+""success"": true,
+""message"": ""Game Start""
+}","{
+""code"": 401,
+""message"": ""Please Login!"",
+""success"": false
+}"
