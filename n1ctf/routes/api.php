@@ -56,7 +56,8 @@ Route::group(['middleware'=>['auth:api','verified']] ,function($router)
     Route::delete('hint/delete/{id}','hintController@deletehint');
     Route::get('/game/over','timecontroller@over');
     Route::get('/game/start','timecontroller@GameStartNow');
-     Route::post('/game/time','timecontroller@gamestart');
+    Route::post('/game/time','timecontroller@gamestart');
+    Route::get('/updateScoreBoard','teamController@updateAllScore');
 });
 
 Route::get('team/{id}','teamController@show_team');

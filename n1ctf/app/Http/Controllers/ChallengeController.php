@@ -6,6 +6,7 @@ use App\challenge;
 use App\challenge_team;
 use App\User;
 use App\teams;
+use App\Jobs\updatescore;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
@@ -267,7 +268,8 @@ class ChallengeController extends Controller
         if($challenge->info != 'start') return response()->json(['code'=>400,'success'=>false,'message'=>'Game Over!']);
         $dyn = ENV('DYN_FLAG');
         $token = $team->team_token;
-        if (($challenge->flag === $request['flag'] || ($dyn && 'N1CTF{'.hash('sha256',($challenge->flag).$token,false).'}' === $request['flag'])) && $challenge->info==='start') 
+        $dyn_prefix = env('DYN_FLAG_PREFIX','N1CTF');
+        if (($challenge->flag === $request['flag'] || ($dyn && $dyn_prefix.'{'.hash('sha256',($challenge->flag).$token,false).'}' === $request['flag'])) && $challenge->info==='start') 
         {
             $id=$challenge->id;
             $c=challenge::find($id);       
@@ -291,6 +293,9 @@ class ChallengeController extends Controller
                 }
                 $c->save();
             }
+            DB::table('jobs')->where('queue','update')->delete();
+            $updatejob = (new updatescore());
+            dispatch($updatejob)->onQueue('update');
             return response()->json(['code'=>200,'success'=>true,'message'=>'true']);
         }
         return response()->json(['code'=>400,'success'=>false,'message'=>'false']);

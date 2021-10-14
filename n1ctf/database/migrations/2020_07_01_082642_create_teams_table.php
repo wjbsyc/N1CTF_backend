@@ -19,6 +19,7 @@ class CreateTeamsTable extends Migration
             $table->rememberToken();
             $table->timestamp('time')->nullable();
             $table->string('nation')->nullable();
+            $table->integer('scoreid')->nullable();
             $table->string('team_token', 60)->unique()->nullable();;
             $table->timestamps();
         });

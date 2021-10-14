@@ -4,8 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\teams;
+use App\score;
 use Validator;
-
+use App\User;
 class teamController extends Controller
 {
     public function getUserTeam()
@@ -39,6 +40,8 @@ class teamController extends Controller
 	            );
 	        }
     		$team = teams::create(['name'=>$request['name'],'team_token'=>\Str::random(48)]);
+            $score = score::create(['score'=>0]);
+            $score->team()->associate($team);
     		$team->members()->save($user);
     		return response()->json(['code'=>200,'success'=>true,'message'=>'OK']);
     	}
@@ -70,4 +73,14 @@ class teamController extends Controller
     {
     	return response()->json(['code'=>200,'success'=>true,'team'=>teams::teamDetail($id)]);
     }
+
+    public function updateAllScore()
+    {
+        if (User::isadmin()) {
+            teams::updateScore();
+            return response()->json(['code'=>200,'success' => true,'message' => 'OK']);
+        }
+        else return response()->json(['code'=>400,'success' => false,'message' => 'Permission Denied']);
+    }
+
 }

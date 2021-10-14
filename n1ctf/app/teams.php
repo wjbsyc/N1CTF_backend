@@ -3,7 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Support\Facades\DB;
 class teams extends Model
 {
    protected $fillable = [
@@ -23,7 +23,10 @@ class teams extends Model
     {
         return $this->hasMany('App\User','teamid');
     }
-
+    public function score()
+    {
+        return $this->hasOne('App\score','teamid');
+    }
     public function challenges()
     {
         return $this->belongsToMany('App\challenge', 'challenge_teams', 'teamid', 'challengeid')->using('App\challenge_team')->withPivot('created_at','userid','rank');
@@ -102,28 +105,46 @@ class teams extends Model
         $this->save();
     }
 
+    public static function updateScore()
+    {
+        $users = teams::has('challenges')->get();
+        foreach ($users as $user) {
+            $id = $user->id;
+            $totalScore = teams::teamscore($id);
+            $lastsubtime = $user->time;
+            $teamscore = $user->score()->first();
+            if(!$teamscore)
+            {
+                $teamscore = score::create(['score'=>0]);
+                $teamscore->team()->associate($user);
+            }
+            $teamscore->score = $totalScore;
+            $teamscore->lastsubtime = $lastsubtime;
+            $teamscore->save();
+        }
+    }
 
     public static function scoreboard($page)
     {
         $scores = collect([]);
-        $users = teams::has('challenges')->get();
-        foreach ($users as $user) {
-            $id = $user->id;
-            $name = $user->name;
-            $totalScore = teams::teamscore($id);
-            $lastsubtime = $user->time;
-            $scores->push(array('id' => $id, 'name' => $name, 'totalScore' => $totalScore, 'lastsubtime' => $lastsubtime));
-        }
-        $sorted = $scores->sort(
-            function ($a, $b) {
-                return ($b['totalScore'] - $a['totalScore']) ?: strcmp($a['lastsubtime'], $b['lastsubtime']);
-            }
-        );
-        $ret = $sorted->forPage($page,50)->all();
+        $orders = DB::table('score')
+            ->whereNotNull('teamid')
+            ->where('score','>','0')
+            ->orderBy('lastsubtime')
+            ->orderByDesc('score')
+            ->forPage($page,50)
+            ->get();
+
         $rs = ($page-1)*50 +1;
-        foreach ($ret as $i => $value) {
-            $ret[$i]['rank'] = $rs++;
+        foreach($orders as $order)
+        {
+             $team = teams::find($order->teamid);
+             $id = $team->id;
+             $name = $team->name;
+             $solveds = $team->challenges()->get()->pluck('id');
+             $scores->push(array('rank'=>$rs, 'id' => $id, 'name' => $name, 'totalScore' => $order->score, 'solveds' => $solveds ,'lastsubtime' => $order->lastsubtime));
+             $rs++;
         }
-        return collect($ret)->keyBy('rank')->all();
+        return  $scores->keyBy('rank')->all();
     }
 }

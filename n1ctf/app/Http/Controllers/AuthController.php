@@ -59,7 +59,8 @@ class AuthController extends Controller
         //         $mail->to($email, $name);
         //         $mail->subject($subject);
         // });
-        $user->sendEmailVerificationNotification();
+        //$user->sendEmailVerificationNotification();
+        $user->markEmailAsVerified();
         return response()->json(['code' => 200,'success'=>true,'message' =>$user->name.':An email will be sent to your email address,Please Check!' ]);
     }
 
