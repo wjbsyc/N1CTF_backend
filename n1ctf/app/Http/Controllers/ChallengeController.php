@@ -222,6 +222,7 @@ class ChallengeController extends Controller
     public function getQuestionDetail(challenge $challenge)
     {
         $user = auth('api')->user();
+        $team = $user->team;
         $power = !!$user ? Hash::check('admin', $user->power) : false;
         if($challenge->info != 'hide'||$power){
         $flag="Homura";
@@ -240,8 +241,9 @@ class ChallengeController extends Controller
             'class' => $challenge->class,
             'solves' => $challenge->teams()->count(),
             'hints' =>$challenge->hints,
-            'flag' => $flag
-            //'power' => $power
+            'flag' => $flag,
+            'passed' => $team?$team->challengePassed($challenge->id):False,
+            'info' => $challenge->info
         ]]);
         }
     }
