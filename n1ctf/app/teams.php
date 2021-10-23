@@ -130,12 +130,13 @@ class teams extends Model
         $orders = DB::table('score')
             ->whereNotNull('teamid')
             ->where('score','>','0')
-            ->orderBy('lastsubtime')
             ->orderByDesc('score')
+            ->orderBy('lastsubtime')
             ->forPage($page,15)
             ->get();
 
         $rs = ($page-1)*15 +1;
+        //var_dump($orders);
         foreach($orders as $order)
         {
              $team = teams::find($order->teamid);
