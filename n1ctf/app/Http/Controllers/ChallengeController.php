@@ -105,7 +105,10 @@ class ChallengeController extends Controller
         $page = $page >= 1 ? round($page):1;
         $users = teams::scoreboard($page);
         $team_count = teams::has('challenges')->count();
-        return response()->json(['code'=>200,'success'=>true,'teams'=>$users,'total'=>$team_count]);
+        $chals = challenge::where('info','!=','hide')
+                ->select('id', 'title', 'score','class')
+                ->get();
+        return response()->json(['code'=>200,'success'=>true,'challs'=>$chals  ,'teams'=>$users,'total'=>$team_count]);
     }
 
 

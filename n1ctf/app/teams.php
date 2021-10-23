@@ -141,7 +141,7 @@ class teams extends Model
              $team = teams::find($order->teamid);
              $id = $team->id;
              $name = $team->name;
-             $solveds = $team->challenges()->get()->pluck('id','title');
+             $solveds = $team->challenges()->get()->pluck('id');
              $scores->push(array('rank'=>$rs, 'id' => $id, 'name' => $name, 'totalScore' => $order->score, 'solveds' => $solveds ,'lastsubtime' => $order->lastsubtime));
              $rs++;
         }
