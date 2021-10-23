@@ -132,16 +132,16 @@ class teams extends Model
             ->where('score','>','0')
             ->orderBy('lastsubtime')
             ->orderByDesc('score')
-            ->forPage($page,50)
+            ->forPage($page,15)
             ->get();
 
-        $rs = ($page-1)*50 +1;
+        $rs = ($page-1)*15 +1;
         foreach($orders as $order)
         {
              $team = teams::find($order->teamid);
              $id = $team->id;
              $name = $team->name;
-             $solveds = $team->challenges()->get()->pluck('id');
+             $solveds = $team->challenges()->get()->pluck('id','title');
              $scores->push(array('rank'=>$rs, 'id' => $id, 'name' => $name, 'totalScore' => $order->score, 'solveds' => $solveds ,'lastsubtime' => $order->lastsubtime));
              $rs++;
         }
