@@ -80,7 +80,13 @@ class ChallengeController extends Controller
             $challenge->flag = $request['flag'];
             $challenge->info=$request['info'];
             $challenge->score = $request['score'] ?? 1000;
-            if ($challenge->save()) return response()->json(['code'=>200,'success' => true,'message' => 'OK']);
+            if ($challenge->save()) 
+            {
+                DB::table('jobs')->where('queue','update')->delete();
+                $updatejob = (new updatescore());
+                dispatch($updatejob)->onQueue('update');
+                return response()->json(['code'=>200,'success' => true,'message' => 'OK']);
+            }
             else return response()->json(['code'=>400,'success' => false,'message' => 'ERROR!']);
         }
         else return response()->json(['code'=>400,'success' => false,'message' => 'Permission Denied']);
@@ -324,7 +330,13 @@ class ChallengeController extends Controller
             $challenge->teams()->detach();
             // 删除
             $res =  $challenge->delete() ? true : false;
-            if($res) return response()->json(['code'=>200,'success'=>true,'message'=>'OK']);
+            if($res) 
+            {
+                DB::table('jobs')->where('queue','update')->delete();
+                $updatejob = (new updatescore());
+                dispatch($updatejob)->onQueue('update');
+                return response()->json(['code'=>200,'success'=>true,'message'=>'OK']);
+            }
             else return response()->json(['code'=>200,'success'=>false,'message'=>'FALSE']);
         } 
         else 

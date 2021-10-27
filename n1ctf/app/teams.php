@@ -74,7 +74,7 @@ class teams extends Model
     public static function solvedchallenges($teamid)
     {
         $team = teams::find($teamid);
-        $challenges = $team->challenges()->get();
+        $challenges = $team->challenges()->where('info','!=','hide')->get();
         $sorted = $challenges->sortByDesc('pivot.created_at');
         return $sorted->values();
     }
