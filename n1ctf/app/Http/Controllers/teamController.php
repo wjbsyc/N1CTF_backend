@@ -28,8 +28,8 @@ class teamController extends Controller
     	else
     	{
     		$v=Validator::make($request,[
-            'name' => 'required|string|max:255|unique:teams'
-            #'nation'=>'required|string|max:255'
+            'name' => 'required|string|max:255|unique:teams',
+            'flag'=>'required|boolean'
             ]);
             if ($v->fails()) {
 	            return array(
@@ -38,7 +38,8 @@ class teamController extends Controller
 	                'success' => false
 	            );
 	        }
-    		$team = teams::create(['name'=>$request['name'],'team_token'=>\Str::random(48)]);
+            $nation_china_mainland = $request['flag'] ? 'true':'false';
+    		$team = teams::create(['name'=>$request['name'],'nation'=>$nation_china_mainland,'team_token'=>\Str::random(48)]);
     		$team->members()->save($user);
     		return response()->json(['code'=>200,'success'=>true,'message'=>'OK']);
     	}
