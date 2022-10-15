@@ -6,6 +6,7 @@ use App\challenge;
 use App\challenge_team;
 use App\User;
 use App\teams;
+use App\Jobs\updatescore;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
@@ -79,7 +80,13 @@ class ChallengeController extends Controller
             $challenge->flag = $request['flag'];
             $challenge->info=$request['info'];
             $challenge->score = $request['score'] ?? 1000;
-            if ($challenge->save()) return response()->json(['code'=>200,'success' => true,'message' => 'OK']);
+            if ($challenge->save()) 
+            {
+                DB::table('jobs')->where('queue','update')->delete();
+                $updatejob = (new updatescore());
+                dispatch($updatejob)->onQueue('update');
+                return response()->json(['code'=>200,'success' => true,'message' => 'OK']);
+            }
             else return response()->json(['code'=>400,'success' => false,'message' => 'ERROR!']);
         }
         else return response()->json(['code'=>400,'success' => false,'message' => 'Permission Denied']);
@@ -104,7 +111,10 @@ class ChallengeController extends Controller
         $page = $page >= 1 ? round($page):1;
         $users = teams::scoreboard($page);
         $team_count = teams::has('challenges')->count();
-        return response()->json(['code'=>200,'success'=>true,'teams'=>$users,'total'=>$team_count]);
+        $chals = challenge::where('info','!=','hide')
+                ->select('id', 'title', 'score','class')
+                ->get();
+        return response()->json(['code'=>200,'success'=>true,'challs'=>$chals  ,'teams'=>$users,'total'=>$team_count]);
     }
 
 
@@ -221,6 +231,7 @@ class ChallengeController extends Controller
     public function getQuestionDetail(challenge $challenge)
     {
         $user = auth('api')->user();
+        $team = $user->team;
         $power = !!$user ? Hash::check('admin', $user->power) : false;
         if($challenge->info != 'hide'||$power){
         $flag="Homura";
@@ -239,8 +250,9 @@ class ChallengeController extends Controller
             'class' => $challenge->class,
             'solves' => $challenge->teams()->count(),
             'hints' =>$challenge->hints,
-            'flag' => $flag
-            //'power' => $power
+            'flag' => $flag,
+            'passed' => $team?$team->challengePassed($challenge->id):False,
+            'info' => $challenge->info
         ]]);
         }
     }
@@ -267,7 +279,8 @@ class ChallengeController extends Controller
         if($challenge->info != 'start') return response()->json(['code'=>400,'success'=>false,'message'=>'Game Over!']);
         $dyn = ENV('DYN_FLAG');
         $token = $team->team_token;
-        if (($challenge->flag === $request['flag'] || ($dyn && 'N1CTF{'.hash('sha256',($challenge->flag).$token,false).'}' === $request['flag'])) && $challenge->info==='start') 
+        $dyn_prefix = env('DYN_FLAG_PREFIX','N1CTF');
+        if (($challenge->flag === $request['flag'] || ($dyn && $dyn_prefix.'{'.hash('sha256',($challenge->flag).$token,false).'}' === $request['flag'])) && $challenge->info==='start') 
         {
             $id=$challenge->id;
             $c=challenge::find($id);       
@@ -291,6 +304,9 @@ class ChallengeController extends Controller
                 }
                 $c->save();
             }
+            DB::table('jobs')->where('queue','update')->delete();
+            $updatejob = (new updatescore());
+            dispatch($updatejob)->onQueue('update');
             return response()->json(['code'=>200,'success'=>true,'message'=>'true']);
         }
         return response()->json(['code'=>400,'success'=>false,'message'=>'false']);
@@ -314,7 +330,13 @@ class ChallengeController extends Controller
             $challenge->teams()->detach();
             // 删除
             $res =  $challenge->delete() ? true : false;
-            if($res) return response()->json(['code'=>200,'success'=>true,'message'=>'OK']);
+            if($res) 
+            {
+                DB::table('jobs')->where('queue','update')->delete();
+                $updatejob = (new updatescore());
+                dispatch($updatejob)->onQueue('update');
+                return response()->json(['code'=>200,'success'=>true,'message'=>'OK']);
+            }
             else return response()->json(['code'=>200,'success'=>false,'message'=>'FALSE']);
         } 
         else 

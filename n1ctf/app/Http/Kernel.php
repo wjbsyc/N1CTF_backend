@@ -21,6 +21,7 @@ class Kernel extends HttpKernel
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
         \App\Http\Middleware\TrimStrings::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
+        \App\Http\Middleware\EnableCrossRequestMiddleware::class,
         //\App\Http\Middleware\IsEmailVerified::class,
     ];
 
@@ -43,6 +44,7 @@ class Kernel extends HttpKernel
         'api' => [
             //'throttle:3600,1',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            \App\Http\Middleware\EnableCrossRequestMiddleware::class,
         ],
     ];
 
@@ -64,5 +66,6 @@ class Kernel extends HttpKernel
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \App\Http\Middleware\IsEmailVerified::class,
+        'cros' =>  \App\Http\Middleware\EnableCrossRequestMiddleware::class,
     ];
 }

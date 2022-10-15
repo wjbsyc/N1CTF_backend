@@ -28,7 +28,7 @@ class AuthController extends Controller
         // 这样的结果是，token 只能在有效期以内进行刷新，过期无法刷新
         // 如果把 refresh 也放进去，token 即使过期但仍在刷新期以内也可刷新
         // 不过刷新一次作废
-        $this->middleware('auth:api', ['except' => ['login','register','resetPassword','regadmin']]);
+        $this->middleware('auth:api', ['except' => ['login','register','resetPassword','regadmin','verifyUser']]);
         // 另外关于上面的中间件，官方文档写的是『auth:api』
         // 但是我推荐用 『jwt.auth』，效果是一样的，但是有更加丰富的报错信息返回
     }
@@ -60,6 +60,7 @@ class AuthController extends Controller
         //         $mail->subject($subject);
         // });
         $user->sendEmailVerificationNotification();
+        //$user->markEmailAsVerified();
         return response()->json(['code' => 200,'success'=>true,'message' =>$user->name.':An email will be sent to your email address,Please Check!' ]);
     }
 
@@ -176,17 +177,18 @@ class AuthController extends Controller
     }
     public function verifyUser($verification_code)
     {
-        $user = auth('api')->user();
-        if(!$user)
-        {
-            return response()->json(['code'=>400,'success'=> false, 'error'=> "Please Login."]);
-        }
+        // $user = auth('api')->user();
+        // if(!$user)
+        // {
+        //     return response()->json(['code'=>400,'success'=> false, 'error'=> "Please Login."]);
+        // }
 
-        $check = DB::table('user_verifications')->where('token',$verification_code)->where('user_id',$user->id)->first();
+        $check = DB::table('user_verifications')->where('token',$verification_code)->first();
 
         if(!is_null($check)){
            
-
+            $user_id = $check->user_id;
+            $user = User::find($user_id);
             $user->markEmailAsVerified();
 
             DB::table('user_verifications')->where('token',$verification_code)->delete();
