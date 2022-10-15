@@ -112,7 +112,8 @@ class teams extends Model
             $name = $user->name;
             $totalScore = teams::teamscore($id);
             $lastsubtime = $user->time;
-            $scores->push(array('id' => $id, 'name' => $name, 'totalScore' => $totalScore, 'lastsubtime' => $lastsubtime));
+            $nation = $user->nation;
+            $scores->push(array('id' => $id, 'name' => $name,'nation'=>$nation, 'totalScore' => $totalScore, 'lastsubtime' => $lastsubtime));
         }
         $sorted = $scores->sort(
             function ($a, $b) {
