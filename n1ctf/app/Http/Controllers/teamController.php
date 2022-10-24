@@ -44,6 +44,7 @@ class teamController extends Controller
             $score = score::create(['score'=>0]);
             $score->team()->associate($team);
     		$team->members()->save($user);
+            $score->save();
     		return response()->json(['code'=>200,'success'=>true,'message'=>'OK']);
     	}
     }
@@ -83,5 +84,26 @@ class teamController extends Controller
         }
         else return response()->json(['code'=>400,'success' => false,'message' => 'Permission Denied']);
     }
+    public function GetTeamByToken(Request $request)
+    {
+        $team_token = $request->get('token');
+        $admin_code = $request->get('code');
+        if($admin_code === env('ADMIN_CODE'))
+        {
+            $team = teams::where('team_token',$team_token)->first();
+            if(!$team)
+            {
+                return response()->json(['code'=>400,'success'=>false,'message'=>'Invalid Team Token']);
+            }
+            else
+            {
+                return response()->json(['code'=>200,'success'=>true,'team'=>$team->name]);
+            }            
+        }
+        else
+        {
+            return response()->json(['code'=>400,'success' => false,'message' => 'Permission Denied']);  
+        }
 
+    }
 }

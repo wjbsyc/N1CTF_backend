@@ -66,3 +66,4 @@ Route::post(env('ADMIN_ROUTE'),'AuthController@regadmin');
 Route::get('/isAdmin','UserController@I_AM_ADMIN')->middleware('auth:api');
 Route::get('/scoreboard', 'ChallengeController@ShowScoreBoard');
 Route::get('/notice','NoticeController@showNotice');
+Route::get('GetTeamByToken','teamController@GetTeamByToken');
